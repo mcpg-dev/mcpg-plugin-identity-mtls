@@ -1,0 +1,20 @@
+schema: mcpg.dev/plugin/v1
+id: dev.mcpg.identity.mtls
+name: mTLS Identity Resolver (header-injection)
+license: Apache-2.0
+description: |
+  Resolves caller identity from mTLS client certificates that an
+  upstream TLS terminator (Envoy / Istio sidecar, nginx, cloud
+  LB) forwards to the gateway via injected HTTP headers. Three
+  source kinds: XFCC (envoy / Istio's `X-Forwarded-Client-Cert`
+  per RFC 6962), DN-string (nginx-style single-DN headers like
+  `X-SSL-Client-S-DN`), and custom-header for cloud-LB shapes.
+  Three extraction modes (subject_cn, subject_dn, fingerprint).
+  Optional per-subject metadata map. Pure offline; no outbound
+  network. **v0.1 ships header-injection only;** native peer-cert
+  validation (`direct_mtls` source) requires the protocol 1.0→1.1
+  RequestMetadata work and is not yet supported.
+class: identity_provider
+runtime: native-cdylib-v1
+protocol_version: "1.0"
+required_capabilities: []
