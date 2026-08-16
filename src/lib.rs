@@ -68,7 +68,7 @@ fn record_resolve_outcome(result: &IdentityResolution, elapsed: std::time::Durat
             elapsed_ms = %elapsed.as_millis(),
             "mtls identity: no header — fall through"
         ),
-        IdentityResolution::Invalid { reason } => warn!(
+        IdentityResolution::Invalid { reason, .. } => warn!(
             reason = %reason,
             elapsed_ms = %elapsed.as_millis(),
             "mtls identity: invalid client cert header"
@@ -451,6 +451,7 @@ fn resolve(inner: &Inner, headers: &[(String, String)]) -> IdentityResolution {
     if let Some(reason) = last_invalid_reason {
         IdentityResolution::Invalid {
             reason: format!("mtls {last_source_tag}: {reason}"),
+            response_headers: Vec::new(),
         }
     } else {
         IdentityResolution::None
@@ -673,7 +674,7 @@ mod tests {
         }));
         let r = resolve(&plugin.inner, &h("X-Cert-Fingerprint", "tooshort"));
         match r {
-            IdentityResolution::Invalid { reason } => {
+            IdentityResolution::Invalid { reason, .. } => {
                 assert!(reason.contains("fingerprint"));
             }
             other => panic!("unexpected: {other:?}"),
